@@ -31,3 +31,24 @@ Deno.test("game 4 is not possible", () => {
 Deno.test("game 5 is possible", () => {
     assertEquals(parseGameRecord("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green").isPossibleWithCondition(cubeQuery), true)
 });
+
+
+Deno.test("game 1 fewest possible", () => {
+    assertEquals(parseGameRecord("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green").getMinimumCubes(), {red: 4, green: 2, blue: 6})
+});
+
+Deno.test("game 2 fewest possible", () => {
+    assertEquals(parseGameRecord("Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue").getMinimumCubes(), {red: 1, green: 3, blue: 4})
+});
+
+Deno.test("game 3 fewest possible", () => {
+    assertEquals(parseGameRecord("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red").getMinimumCubes(), {red: 20, green: 13, blue: 6})
+});
+
+Deno.test("game 4 fewest possible", () => {
+    assertEquals(parseGameRecord("Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red").getMinimumCubes(), {red: 14, green: 3, blue: 15})
+});
+
+Deno.test("game 5 fewest possible", () => {
+    assertEquals(parseGameRecord("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green").getMinimumCubes(), {red: 6, green: 3, blue: 2})
+});

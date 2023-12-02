@@ -20,6 +20,25 @@ export class CubeGrab {
         }, 0);
     }
 
+    private maxByColor(color: string) {
+        let localMax = 0;
+        this.cubes.filter(cube => cube.color === color).forEach((cube) => {
+            if (cube.count > localMax) {
+                localMax = cube.count;
+            }
+        });
+
+        return localMax
+    }
+
+    public getMaxByColor() {
+        return {
+            red: this.maxByColor("red"),
+            green: this.maxByColor("green"),
+            blue: this.maxByColor("blue"),
+        }
+    }
+
     public sumColors() {
         return {
             red: this.sumByColor("red"),
@@ -36,6 +55,26 @@ export class Game {
 
     public toString = () : string => {
         return `Game ${this.id}: ${this.cubegrabs.join("; ")}`;
+    }
+
+    public getMinimumCubes() {
+        let localMax = {
+            red: 0,
+            green: 0,
+            blue: 0,
+        };
+        this.cubegrabs.map(cube => cube.getMaxByColor()).forEach(cubeMax => {
+            if (cubeMax.blue > localMax.blue) {
+                localMax.blue = cubeMax.blue;
+            }
+            if (cubeMax.green > localMax.green) {
+                localMax.green = cubeMax.green;
+            }
+            if (cubeMax.red > localMax.red) {
+                localMax.red = cubeMax.red;
+            }
+        });
+        return localMax;
     }
 
     public isPossibleWithCondition(condition: MinimumCubeCondition): boolean {
@@ -92,3 +131,11 @@ const idSumOfValidGames = validGames.reduce((sum, game) => {
 }, 0);
 
 console.log(`The sum of valid game ids is ${idSumOfValidGames}`);
+
+const sumOfPower = games
+    .map(game => game.getMinimumCubes())
+    .reduce((sum, game) => {
+        return sum + (game.blue * game.green * game.red)
+    }, 0);
+
+console.log(`The sum of the power of the sets is ${sumOfPower}`)
