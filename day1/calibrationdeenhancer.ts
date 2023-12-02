@@ -5,10 +5,6 @@ export function getCalibrationValue(input: string): number {
 
   const combinedDigits = `${!firstDigit ? '' : firstDigit}${!lastDigit ? '' : lastDigit}`;
   const result = Number.parseInt(!combinedDigits ? '0' : combinedDigits);
-
-  if (Number.isNaN(result)) {
-    console.log(`firstDigit(${firstDigit}), lastDigit(${lastDigit}) == ${result}`)
-  }
-
+  
   return result;
 }
