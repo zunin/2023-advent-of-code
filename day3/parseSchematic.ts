@@ -1,9 +1,9 @@
 function parseCoordinates(input: string): CoordinateMap {
-  const lines = input.split("\n").filter((x) => x !== "");
+  const lines = input.trim().split("\n").filter((x) => x !== "");
   const map = lines.reduce((_map, line, y) => {
     return {
       ..._map,
-      [y]: line.split("").reduce((_line, character, x) => {
+      [y]: line.trim().split("").reduce((_line, character, x) => {
         return {
           ..._line,
           [x]: character,
@@ -210,10 +210,9 @@ class EngineSchematic {
       object.value === "*"
       && deduplicateArray(
         this.objectMap.getNeighbouringObjects(object).filter((o) => o.isDigit()),
-        (a, b) => a.value === b.value
+        (a, b) => a.x() === b.x() && a.y() === b.y()
       ).length == 2
     );
-    
     return gears.map((gear) => {
       const [a, b] = this.objectMap.getNeighbouringObjects(gear).filter((o) =>
         o.isDigit()

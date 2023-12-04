@@ -46,12 +46,144 @@ Deno.test("can replicate input from object map", () => {
 });
 
 Deno.test("can retrieve the correct part numbers for gear", () => {
-
     const partNumbers = getPartsAdjacentToGears(engineSchematic);
 
     assertEquals(partNumbers, [
         [new CoordinateObject({x: 0, y: 0}, "467", "digit"), new CoordinateObject({x: 2, y: 2}, "35", "digit")],
         [new CoordinateObject({x: 6, y: 7}, "755", "digit"), new CoordinateObject({x: 5, y: 9}, "598", "digit")],
-    ]);
-    
+    ]); 
+});
+
+Deno.test("can ignore star if no digits nearby", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        ..*... 
+        1.....
+    `);
+
+    assertEquals(partNumbers, []); 
+});
+
+Deno.test("can ignore star if one digit nearby", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        ..*... 
+        ..1...
+    `);
+
+    assertEquals(partNumbers, []); 
+});
+
+Deno.test("can ignore star if one digit left", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1*.... 
+        ...1.. 
+        ......
+    `);
+
+    assertEquals(partNumbers, []); 
+});
+
+Deno.test("can ignore star if space is nearby and digits are outside", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1.*.1. 
+        ...... 
+        ......
+    `);
+
+    assertEquals(partNumbers, []); 
+});
+
+Deno.test("can ignore star there are more than two digits", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1*1... 
+        .1.... 
+        ......
+    `);
+
+    assertEquals(partNumbers, []); 
+});
+
+Deno.test("can find gear if there are two digits", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1*1...
+        ...... 
+        ......
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 2, y: 0}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are two digits in diagonals", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        .*.... 
+        1.....
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 0, y: 2}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are digits in diagonal and above", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        *..... 
+        .1....
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 1, y: 2}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are digits in diagonal and above #2", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        .*....
+        .1....
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 1, y: 2}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are digits in opposite diagonals", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1..... 
+        .*.... 
+        ..1...
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 2, y: 2}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are digits left and below", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1*.... 
+        .1.... 
+        ......
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 1, y: 1}, "1", "digit")],
+    ]); 
+});
+
+Deno.test("can find gear if there are digits left and on diagnoal", () => {
+    const partNumbers = getPartsAdjacentToGears(`
+        1*....
+        ..1... 
+        ......
+    `);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "1", "digit"), new CoordinateObject({x: 2, y: 1}, "1", "digit")],
+    ]); 
 });
