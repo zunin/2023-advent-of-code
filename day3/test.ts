@@ -1,18 +1,13 @@
 import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { parseSchematic, CoordinateObject } from "./parseSchematic.ts";
+import { parseSchematic, CoordinateObject, ObjectMap } from "./parseSchematic.ts";
 
 Deno.test("Test neighboring objects diagonal", () => {
     assertEquals(
-        new CoordinateObject({x: 0, y: 0}, "467", "digit").isNeighbour(
-        new CoordinateObject({x: 3, y: 1}, "*", "symbol")),
-    true);
-});
-
-Deno.test("Test neighboring objects above", () => {
-    assertEquals(
-        new CoordinateObject({x: 2, y: 2}, "35", "digit").isNeighbour(
-        new CoordinateObject({x: 3, y: 1}, "*", "symbol")),
-    true);
+        new CoordinateObject({x: 0, y: 0}, "467", "digit").neighbouringXY(),
+        [{x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1}, {x: 2, y: -1}, {x: 3, y: -1}].concat(
+        [{x: -1, y:  0}, /*                 467                    */ {x: 3, y:  0}]).concat(
+        [{x: -1, y:  1}, {x: 0, y:  1}, {x: 1, y:  1}, {x: 2, y:  1}, {x: 3, y:  1}])
+    );
 });
 
 const engineSchematic = `
@@ -45,3 +40,7 @@ Deno.test("can retrieve the correct part numbers", () => {
     ]);
 });
 
+Deno.test("can replicate input from object map", () => {
+    const map = new ObjectMap(engineSchematic).toString();
+    assertEquals(map, engineSchematic.trim())
+});

@@ -47,7 +47,8 @@ export class CoordinateObject{
 
   private isSelf(x: number, y: number) {
     const selfX = new Range(this.x(), this.value.length).get();
-    return this.y() === y && selfX.includes(x)
+    const selfRow = this.y() === y;
+    return selfRow && selfX.includes(x)
   }
 
   public neighbouringXY() {
@@ -75,58 +76,6 @@ export class CoordinateObject{
   public isSymbol() {
     return this.characterType === "symbol";
   }
-
-  private isRowAbove(other: CoordinateObject): boolean {
-    return this.y() - 1 === other.y();
-  }
-
-  private isRowBelow(other: CoordinateObject): boolean {
-    return this.y() + 1 === other.y();
-  }
-
-  private isSameRow(other: CoordinateObject): boolean {
-    return this.y() === other.y();
-  }
-
-  private isRightColumn(other: CoordinateObject): boolean {
-    const thisX = {min: this.x(), max: this.x() + this.value.length - 1};
-    const otherX = {min: other.x(), max: other.x() + other.value.length - 1};
-    return thisX.max + 1 === otherX.min;
-  }
-
-  private isLeftCoulmn(other: CoordinateObject): boolean {
-    const thisX = {min: this.x(), max: this.x() + this.value.length - 1};
-    const otherX = {min: other.x(), max: other.x() + other.value.length - 1};
-    return thisX.min - 1 === otherX.max;
-  }
-
-  private isXWithin(other: CoordinateObject): boolean {
-    const thisValues = [...new Array(this.value.length ).keys()].map(value => value + this.x());
-    const otherValues = [...new Array(other.value.length).keys()].map(value => value + other.x());
-
-    return thisValues.some(thisValue => otherValues.some(otherValue => thisValue === otherValue))
-  }
-
-  public isNeighbour(other: CoordinateObject): boolean {
-    const isNeighbouringRow = this.isRowAbove(other) || this.isRowBelow(other);
-
-    const isNeighbouringColumn = this.isLeftCoulmn(other) || this.isRightColumn(other);
-
-    if (isNeighbouringColumn && isNeighbouringRow) {
-      return true;
-    }
-
-    if (isNeighbouringRow && this.isXWithin(other)) {
-      return true;
-    }
-
-
-    if (this.isSameRow(other) && isNeighbouringColumn) {
-      return true;
-    }
-
-    return false;
-  }
 }
 
 interface CoordinateObjectMap {
@@ -136,13 +85,22 @@ interface CoordinateObjectMap {
 }
 
 
-class ObjectMap {
+export class ObjectMap {
   objectMap: CoordinateObjectMap = {};
   objectList: Array<CoordinateObject>;
 
   constructor(private input: string) {
    this.objectList = this.getObjectList(parseCoordinates(this.input));
    this.populateObjectMap();
+  }
+
+  public toString = () : string => {
+    return Object.keys(this.objectMap).map(y => {
+      return Object.keys(this.objectMap[y]).map(x => {
+        const object = this.objectMap[y][x];
+        return object.value.split("")[Number.parseInt(x) - object.x()]
+      }).join("")
+    }).join("\n");
   }
 
   private set(x: number, y: number, object: CoordinateObject) {
@@ -230,18 +188,9 @@ class EngineSchematic {
 
   public getEngineParts(): Array<number> {
     const digits = this.objectMap.objectList.filter((object) => object.isDigit());
-    const otherN = digits.filter(digit => [...this.objectMap.getNeighbouringObjects(digit)].filter(obj => !!obj).some(obj => obj.isSymbol()))
+    const digitsWithSymbolNeighbours = digits.filter(digit => this.objectMap.getNeighbouringObjects(digit).some(obj => obj.isSymbol()))
 
-
-    digits.forEach(digit => {
-      this.objectMap.getNeighbouringObjects(digit)
-    });
-
-    const symbols = this.objectMap.objectList.filter((object) => object.isSymbol());
-    const neighbouring = digits.filter(digit => symbols.some(symbol => symbol.isNeighbour(digit)));
-    const notneighbouring = digits.filter(digit => symbols.every(symbol => !symbol.isNeighbour(digit)));
-    
-    return otherN.map(digit => Number.parseInt(digit.value))
+    return digitsWithSymbolNeighbours.map(digit => Number.parseInt(digit.value))
   }
 }
 
