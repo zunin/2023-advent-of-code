@@ -54,6 +54,17 @@ Deno.test("can retrieve the correct part numbers for gear", () => {
     ]); 
 });
 
+Deno.test("can retrieve the correct part numbers for gear and calculate proper sum of ratios", () => {
+    const partNumbers = getPartsAdjacentToGears(engineSchematic);
+    const sumOfGearRadios = partNumbers
+    .map(([a, b]) => Number.parseInt(a.value) * Number.parseInt(b.value))
+    .reduce((sum, product) => sum + product, 0);
+
+    assertEquals(sumOfGearRadios, 467835); 
+});
+
+
+
 Deno.test("can ignore star if no digits nearby", () => {
     const partNumbers = getPartsAdjacentToGears(`
         1..... 

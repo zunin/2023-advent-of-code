@@ -206,17 +206,14 @@ class EngineSchematic {
   }
 
   getPartsAdjacentToGears(): Array<[CoordinateObject, CoordinateObject]> {
-    const gears = this.objectMap.objectList.filter((object) =>
-      object.value === "*"
-      && deduplicateArray(
-        this.objectMap.getNeighbouringObjects(object).filter((o) => o.isDigit()),
-        (a, b) => a.x() === b.x() && a.y() === b.y()
-      ).length == 2
-    );
-    return gears.map((gear) => {
-      const [a, b] = this.objectMap.getNeighbouringObjects(gear).filter((o) =>
-        o.isDigit()
-      );
+    const stars = this.objectMap.objectList.filter((object) => object.value === "*");
+    const nearbyDigits = stars.map(star => deduplicateArray(
+      this.objectMap.getNeighbouringObjects(star).filter((o) => o.isDigit()),
+      (a, b) => a.x() === b.x() && a.y() === b.y()
+    ));
+    const digitsOfGears = nearbyDigits.filter(neighbours => neighbours.length == 2);
+
+    return digitsOfGears.map(([a, b]) => {
       return [a, b];
     });
   }
