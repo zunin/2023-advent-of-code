@@ -45,6 +45,20 @@
                 "--allow-all"
             ],
             "attachSimplePort": 9229
+        },
+        {
+            "request": "launch",
+            "name": "day 4",
+            "type": "node",
+            "program": "${workspaceFolder}/day4/mod.ts",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "/deno/bin/deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-wait",
+                "--allow-all"
+            ],
+            "attachSimplePort": 9229
         }
     ]
 }
