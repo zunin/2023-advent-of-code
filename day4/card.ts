@@ -22,7 +22,7 @@ export function parse(input: string): Array<Card> {
 
 export function parseLine(input: string): Card {
   const [cardString, numberString] = input.split(": ");
-  const [_, idText] = cardString.trim().split(" ");
+  const [_, idText] = cardString.trim().split("Card");
   const id = Number.parseInt(idText.trim());
   const [winningNumbersText, ownNumbersText] = numberString.split(" | ");
   const winningNumbers = winningNumbersText.trim().split(" ").map(text => Number.parseInt(text.trim())).filter(input => !Number.isNaN(input))
@@ -59,8 +59,12 @@ class CardDictionary {
     }
 
     insert(card: Card) {
+        this.insertCount(card, 1);
+    }
+
+    insertCount(card: Card, count: number) {
         const cardGet = this.get(card);
-        cardGet.count += 1;
+        cardGet.count += count;
         this.dictionary[card.id] = cardGet;
     }
 
@@ -71,7 +75,7 @@ class CardDictionary {
 
 export const CardTeller = class CardTeller {
     private cards: Array<Card>;
-    private cardCopys: CardDictionary
+    public cardCopys: CardDictionary
     constructor(input: string) {
         this.cards = parse(input);
         this.cardCopys = new CardDictionary();
@@ -81,11 +85,9 @@ export const CardTeller = class CardTeller {
         this.cards.forEach(originalCard => {
             this.cardCopys.insert(originalCard);
 
-            for(let count = 0; count < this.cardCopys.getCount(originalCard); count ++) {
-                this.cards.slice(originalCard.id, originalCard.id + originalCard.getWinningNumbers().length).forEach(card => {
-                    this.cardCopys.insert(card);
-                })
-            }
+            this.cards.slice(originalCard.id, originalCard.id + originalCard.getWinningNumbers().length).forEach(card => {
+                this.cardCopys.insertCount(card, this.cardCopys.getCount(originalCard));
+            })
             
         });
         return this.cardCopys.length();

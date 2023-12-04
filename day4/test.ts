@@ -43,3 +43,26 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 Deno.test("Example pile of scratchcards is 30", () => {    
     assertEquals(new CardTeller(cardInput).tallyScartchCards(), 30);
 });
+
+Deno.test("Example pile of scratchcards has specific tally", () => {    
+    const teller = new CardTeller(cardInput);
+    teller.tallyScartchCards();
+    const cardCopysDictionary = teller.cardCopys.dictionary;
+    const cardIdCountMapping = Object.keys(cardCopysDictionary).map(cardId => {
+        return {cardId, count: cardCopysDictionary[Number.parseInt(cardId)].count}
+    }).reduce((obj, {cardId, count}) => {
+        return {
+            ...obj,
+            [cardId]: count
+        }
+    }, {} as {[id: string]: number})
+
+    assertEquals(cardIdCountMapping, {
+        1: 1,
+        2: 2,
+        3: 4,
+        4: 8,
+        5: 14,
+        6: 1
+    });
+});
