@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { parseSchematic, CoordinateObject, ObjectMap } from "./parseSchematic.ts";
+import { parseSchematic, CoordinateObject, ObjectMap, getPartsAdjacentToGears } from "./parseSchematic.ts";
 
 Deno.test("Test neighboring objects diagonal", () => {
     assertEquals(
@@ -43,4 +43,15 @@ Deno.test("can retrieve the correct part numbers", () => {
 Deno.test("can replicate input from object map", () => {
     const map = new ObjectMap(engineSchematic).toString();
     assertEquals(map, engineSchematic.trim())
+});
+
+Deno.test("can retrieve the correct part numbers for gear", () => {
+
+    const partNumbers = getPartsAdjacentToGears(engineSchematic);
+
+    assertEquals(partNumbers, [
+        [new CoordinateObject({x: 0, y: 0}, "467", "digit"), new CoordinateObject({x: 2, y: 2}, "35", "digit")],
+        [new CoordinateObject({x: 6, y: 7}, "755", "digit"), new CoordinateObject({x: 5, y: 9}, "598", "digit")],
+    ]);
+    
 });
